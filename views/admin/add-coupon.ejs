@@ -1,0 +1,82 @@
+<%- include('../includes/head.ejs') %>
+<body>
+<%- include('../includes/navigation.ejs') %>
+<div class="container py-4">
+  <h2 class="mb-4">Thêm mã giảm giá</h2>
+  <% if (errorMessage) { %>
+    <div class="alert alert-danger"><%= errorMessage %></div>
+  <% } %>
+  <form method="POST" action="/admin/coupons/add">
+    <div class="mb-3">
+      <label class="form-label">Mã giảm giá</label>
+      <div class="input-group">
+        <input type="text" id="couponCode" name="code" class="form-control" required readonly>
+        <button type="button" class="btn btn-secondary" onclick="generateCouponCode()">Tạo mã tự động</button>
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Loại</label>
+      <select name="type" class="form-select" required>
+        <option value="percent">Phần trăm (%)</option>
+        <option value="fixed">Cố định (VNĐ)</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Giá trị</label>
+      <input type="number" name="value" class="form-control" required min="1">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Giảm tối đa (VNĐ)</label>
+      <input type="number" name="maxDiscount" class="form-control" placeholder="Để trống nếu không giới hạn">
+      <div class="form-text">Chỉ áp dụng cho loại giảm theo phần trăm. Để trống nếu không muốn giới hạn số tiền giảm tối đa.</div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Đơn tối thiểu (VNĐ)</label>
+      <input type="number" name="minOrder" class="form-control">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Số lượng</label>
+      <input type="number" name="quantity" class="form-control" required min="1">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Ngày bắt đầu</label>
+      <input type="date" name="startDate" class="form-control">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Ngày kết thúc</label>
+      <input type="date" name="endDate" class="form-control">
+    </div>
+    <button class="btn btn-primary" type="submit">Lưu</button>
+    <a href="/admin/coupons" class="btn btn-secondary ms-2">Quay lại</a>
+  </form>
+</div>
+<%- include('../includes/end.ejs') %> 
+<script>
+function generateCouponCode() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = '';
+  for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  document.getElementById('couponCode').value = code;
+}
+
+// Ẩn/hiện trường giảm tối đa theo loại voucher
+document.addEventListener('DOMContentLoaded', function() {
+  const typeSelect = document.querySelector('select[name="type"]');
+  const maxDiscountDiv = document.querySelector('input[name="maxDiscount"]').parentElement;
+  
+  function toggleMaxDiscount() {
+    if (typeSelect.value === 'percent') {
+      maxDiscountDiv.style.display = 'block';
+    } else {
+      maxDiscountDiv.style.display = 'none';
+      document.querySelector('input[name="maxDiscount"]').value = '';
+    }
+  }
+  
+  // Chạy lần đầu
+  toggleMaxDiscount();
+  
+  // Lắng nghe sự kiện thay đổi
+  typeSelect.addEventListener('change', toggleMaxDiscount);
+});
+</script> 

@@ -1,0 +1,121 @@
+<%- include('includes/head.ejs') %>
+<link rel="stylesheet" href="/css/orders.css">
+</head>
+<body>
+<%- include('includes/navigation.ejs') %>
+<div class="container py-5">
+    <!-- Flash Messages -->
+    <% if (messages && messages.error && messages.error.length > 0) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <%= messages.error[0] %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+    <% if (messages && messages.success && messages.success.length > 0) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <%= messages.success[0] %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 fw-bold">Quản lý người dùng</h1>
+        <input type="text" id="searchUser" class="form-control" placeholder="Tìm kiếm tên hoặc email..." style="max-width:300px;">
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Tên</th>
+                            <th>Email</th>
+                            <th>Vai trò</th>
+                            <th>Ngày tạo</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody">
+                        <% if (users.length === 0) { %>
+                            <tr><td colspan="6" class="text-center">Chưa có user nào</td></tr>
+                        <% } %>
+                        <% users.forEach(user => { %>
+                        <tr>
+                            <td><%= user.name %></td>
+                            <td><%= user.email %></td>
+                            <td>
+                              <form action="/admin/users/update-role" method="POST" class="d-inline">
+                                <input type="hidden" name="userId" value="<%= user._id %>">
+                                <select name="role" class="form-select form-select-sm" onchange="confirmRoleChange(this)">
+                                  <option value="user" <%= user.role === 'user' ? 'selected' : '' %>>User</option>
+                                  <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                                </select>
+                              </form>
+                            </td>
+                            <td><%= user.createdAt ? (new Date(user.createdAt)).toLocaleString('vi-VN', { hour12: false }) : '' %></td>
+                            <td>
+                              <form action="/admin/users/toggle-active" method="POST" class="d-inline">
+                                <input type="hidden" name="userId" value="<%= user._id %>">
+                                <% if (user.isActive !== false) { %>
+                                  <button class="btn btn-sm btn-success" type="submit">Đang hoạt động</button>
+                                <% } else { %>
+                                  <button class="btn btn-sm btn-secondary" type="submit">Đã khoá</button>
+                                <% } %>
+                              </form>
+                            </td>
+                            <td>
+                              <a href="/admin/users/<%= user._id %>" class="btn btn-sm btn-outline-primary me-1">Xem</a>
+                              <% if (user.role !== 'admin') { %>
+                              <form action="/admin/users/delete" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xoá user này?');">
+                                <input type="hidden" name="userId" value="<%= user._id %>">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Xoá</button>
+                              </form>
+                              <% } %>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('includes/end.ejs') %>
+<script>
+  // Tìm kiếm user theo tên/email
+  document.getElementById('searchUser').addEventListener('input', function() {
+    const keyword = this.value.toLowerCase();
+    document.querySelectorAll('#userTableBody tr').forEach(row => {
+      const name = row.children[0]?.textContent.toLowerCase() || '';
+      const email = row.children[1]?.textContent.toLowerCase() || '';
+      row.style.display = (name.includes(keyword) || email.includes(keyword)) ? '' : 'none';
+    });
+  });
+
+  // Xác nhận thay đổi vai trò
+  function confirmRoleChange(selectElement) {
+    const newRole = selectElement.value;
+    const userName = selectElement.closest('tr').children[0].textContent.trim();
+    const currentRole = selectElement.options[selectElement.selectedIndex].text;
+    
+    const message = `Bạn có chắc muốn thay đổi vai trò của "${userName}" thành "${currentRole}"?`;
+    
+    if (confirm(message)) {
+      selectElement.form.submit();
+    } else {
+      // Khôi phục giá trị cũ
+      const previousValue = selectElement.getAttribute('data-previous-value') || 'user';
+      selectElement.value = previousValue;
+    }
+  }
+
+  // Lưu giá trị ban đầu khi trang load
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('select[name="role"]').forEach(select => {
+      select.setAttribute('data-previous-value', select.value);
+    });
+  });
+</script> 

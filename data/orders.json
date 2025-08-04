@@ -1,0 +1,185 @@
+[
+  {
+    "id": "1752960257076",
+    "products": [
+      {
+        "id": "687964659e0b4d637c473e53",
+        "title": "Đu đủ ruột vàng hữu cơ",
+        "price": 55000,
+        "imgUrl": "/images/products/image-1752786021455-63059359.jpg",
+        "qty": 3
+      }
+    ],
+    "customerInfo": {
+      "fullName": "eqeqweq",
+      "email": "31231231@gmail.com",
+      "address": "grergre",
+      "phone": "31231231",
+      "provinceName": "TP Hồ Chí Minh",
+      "districtName": "Quận 12",
+      "wardName": "Phường Thới An",
+      "note": ""
+    },
+    "totalPrice": 165000,
+    "userId": "687811138a569facba3118e4",
+    "status": "completed",
+    "createdAt": "2025-07-19T21:24:17.076Z",
+    "updatedAt": "2025-07-29T22:18:22.826Z"
+  },
+  {
+    "id": "1753268316787",
+    "products": [
+      {
+        "id": "687964919e0b4d637c473e56",
+        "title": "Sầu riêng Musang King",
+        "price": 289000,
+        "imgUrl": "/images/products/image-1752786065774-861655074.jpg",
+        "qty": 1
+      }
+    ],
+    "customerInfo": {
+      "fullName": "Duy",
+      "email": "nhocpro989@gmail.com",
+      "address": "gregre",
+      "phone": "0909747514",
+      "provinceName": "TP Hồ Chí Minh",
+      "districtName": "Quận Gò Vấp",
+      "wardName": "Phường 10",
+      "note": ""
+    },
+    "totalPrice": 289000,
+    "userId": "687811138a569facba3118e4",
+    "status": "completed",
+    "createdAt": "2025-07-23T10:58:36.787Z",
+    "updatedAt": "2025-07-23T11:41:05.595Z"
+  },
+  {
+    "id": "1753824056274",
+    "products": [
+      {
+        "id": "687964919e0b4d637c473e56",
+        "title": "Sầu riêng Musang King",
+        "price": 289000,
+        "imgUrl": "/images/products/image-1752786065774-861655074.jpg",
+        "qty": 1
+      }
+    ],
+    "customerInfo": {
+      "fullName": "gregre",
+      "email": "nhocpro989@gmail.com",
+      "address": "gregreg",
+      "phone": "432432432",
+      "provinceName": "TP Hồ Chí Minh",
+      "districtName": "Quận Bình Thạnh",
+      "wardName": "Phường 12",
+      "note": ""
+    },
+    "totalPrice": 289000,
+    "userId": "68893af1427ea07e7cdb5cdb",
+    "status": "completed",
+    "createdAt": "2025-07-29T21:20:56.274Z",
+    "updatedAt": "2025-07-29T22:18:39.946Z"
+  },
+  {
+    "id": "1753824549283",
+    "products": [
+      {
+        "id": "687964659e0b4d637c473e53",
+        "title": "Đu đủ ruột vàng hữu cơ",
+        "price": 55000,
+        "imgUrl": "/images/products/image-1752786021455-63059359.jpg",
+        "qty": 1
+      }
+    ],
+    "customerInfo": {
+      "name": "dawdwa",
+      "email": "fewfewf@gmail.com",
+      "phone": "43243242",
+      "address": "qdqdq",
+      "wardName": "Xã Tân Thạnh Tây",
+      "districtName": "Huyện Củ Chi",
+      "provinceName": "TP Hồ Chí Minh"
+    },
+    "totalPrice": 66750,
+    "userId": "68893af1427ea07e7cdb5cdb",
+    "status": "cancelled",
+    "createdAt": "2025-07-29T21:29:09.283Z",
+    "appliedCoupon": {
+      "_id": "68893d01e517e177fc144547",
+      "code": "3BTG60QM",
+      "type": "percent",
+      "value": 15,
+      "minOrder": 0,
+      "maxDiscount": null,
+      "quantity": 5,
+      "used": 0,
+      "usedBy": [],
+      "startDate": "2025-07-30T00:00:00.000Z",
+      "endDate": "2025-07-30T00:00:00.000Z",
+      "createdAt": "2025-07-29T21:28:33.046Z",
+      "__v": 0
+    },
+    "shippingFee": 20000,
+    "subtotal": 46750,
+    "updatedAt": "2025-07-29T22:11:01.229Z"
+  },
+  {
+    "id": "1753908041550",
+    "products": [
+      {
+        "id": "6879613f99771fb4d2625ec3",
+        "title": "Dừa xiêm gọt trọc",
+        "price": 22000,
+        "imgUrl": "/images/products/image-1752785215131-727215302.jpg",
+        "qty": 1
+      }
+    ],
+    "customerInfo": {
+      "fullName": "fewfw",
+      "email": "nhocpro989@gmail.com",
+      "address": "dawda",
+      "phone": "321322323",
+      "provinceName": "TP Hồ Chí Minh",
+      "districtName": "Quận 12",
+      "wardName": "Phường Thới An",
+      "note": ""
+    },
+    "totalPrice": 42000,
+    "userId": "688a8264f9a87ef4f9ea62c3",
+    "status": "pending",
+    "createdAt": "2025-07-30T20:40:41.550Z",
+    "appliedCoupon": null,
+    "shippingFee": 20000,
+    "subtotal": 22000
+  },
+  {
+    "id": "1753908063280",
+    "products": [
+      {
+        "id": "687964659e0b4d637c473e53",
+        "title": "Đu đủ ruột vàng hữu cơ",
+        "price": 55000,
+        "imgUrl": "/images/products/image-1752786021455-63059359.jpg",
+        "qty": 1
+      }
+    ],
+    "customerInfo": {
+      "fullName": "fewfew",
+      "email": "fregreg@gmail.com",
+      "address": "gregre",
+      "phone": "312312232",
+      "provinceName": "TP Hồ Chí Minh",
+      "districtName": "Quận Bình Thạnh",
+      "wardName": "Phường 26",
+      "note": ""
+    },
+    "totalPrice": 75000,
+    "userId": "688a8264f9a87ef4f9ea62c3",
+    "status": "cancelled",
+    "createdAt": "2025-07-30T20:41:03.280Z",
+    "appliedCoupon": null,
+    "shippingFee": 20000,
+    "subtotal": 55000,
+    "updatedAt": "2025-07-30T20:55:02.936Z"
+  }
+]

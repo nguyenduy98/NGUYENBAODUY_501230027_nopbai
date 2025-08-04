@@ -1,0 +1,291 @@
+<nav class="navbar navbar-expand-lg custom-header">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
+    <!-- Nút MENU (hover để hiện dropdown) -->
+    <div class="menu-dropdown-wrapper" style="position: relative; display: flex; align-items: center;">
+      <div class="btn menu-btn me-2" id="menuDropdownBtn" role="button" tabindex="0">
+        <span class="navbar-toggler-icon"></span>
+        <span class="menu-label">MENU</span>
+      </div>
+      <div class="menu-dropdown-list">
+        <a class="dropdown-product-item" href="/">TRANG CHỦ</a>
+        <a class="dropdown-product-item" href="#import">TRÁI CÂY NHẬP KHẨU</a>
+        <a class="dropdown-product-item" href="#vietnam">TRÁI CÂY VIỆT NAM</a>
+        <a class="dropdown-product-item" href="#gift">QUÀ TẶNG TRÁI CÂY</a>
+      </div>
+    </div>
+    <!-- Logo -->
+    <a class="navbar-brand custom-logo d-flex align-items-center" href="/">
+      <span>fresh<span style="color:#fff200;">mart</span></span>
+    </a>
+
+    <!-- Search Form trên header -->
+    <form class="d-none d-md-flex mx-3 flex-grow-1" method="GET" action="/" style="max-width:420px; position:relative;">
+      <input type="text" class="form-control me-2" name="q" id="search-autocomplete" placeholder="Tìm kiếm sản phẩm..." autocomplete="off" value="<%= typeof q !== 'undefined' ? q : '' %>" style="min-width:0;">
+      <button type="submit" class="btn btn-light"><i class="fas fa-search"></i></button>
+      <ul id="autocomplete-list" class="list-group" style="position:absolute;top:100%;left:0;width:100%;z-index:1000;display:none;"></ul>
+    </form>
+
+    <!-- Right icons -->
+    <div class="d-flex align-items-center ms-auto" style="gap:24px;">
+      <div class="d-none d-lg-flex align-items-center hotline-box">
+        <i class="fas fa-phone-alt me-1"></i> <span>0865660775</span>
+      </div>
+      <% if (typeof user !== 'undefined' && user && user.role === 'admin') { %>
+        <a href="/admin/dashboard" class="header-icon">
+          <i class="fas fa-user"></i>
+        </a>
+      <% } else { %>
+        <a href="/profile" class="header-icon">
+          <i class="fas fa-user"></i>
+        </a>
+      <% } %>
+      <a href="/cart" class="header-icon position-relative">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-badge"><%= cartCount || 0 %></span>
+      </a>
+      <% if (typeof user !== 'undefined' && user && user.role === 'admin') { %>
+        <form action="/logout" method="POST" style="display:inline;">
+          <button type="submit" class="header-icon" style="background:#ff4444;color:#fff;margin-left:8px;">
+            <i class="fas fa-sign-out-alt"></i>
+          </button>
+        </form>
+      <% } %>
+    </div>
+  </div>
+</nav>
+<!-- XÓA menu-dropdown-wrapper ở dưới nếu còn -->
+<style>
+  .custom-header {
+    background: linear-gradient(90deg, #ff8551 0%, #ffb88c 100%);
+    min-height: 72px;
+    box-shadow: 0 4px 24px rgba(255,133,81,0.10);
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 18px;
+    padding: 0 0.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+  }
+  .custom-logo span {
+    font-size: 2.4rem;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 1px;
+    line-height: 1;
+    transition: text-shadow 0.2s;
+    text-shadow: 0 2px 8px rgba(255,133,81,0.10);
+  }
+  .custom-logo:hover span {
+    text-shadow: 0 4px 16px #ff8551;
+  }
+  .menu-btn {
+    background: #fff;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(255,133,81,0.10);
+    border: none;
+    transition: box-shadow 0.18s, background 0.18s, transform 0.18s;
+  }
+  .menu-btn:hover {
+    background: #fffbe6;
+    box-shadow: 0 4px 16px #ff8551;
+    transform: scale(1.08);
+  }
+  .menu-label {
+    color: #ff8551;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 2px;
+    letter-spacing: 1px;
+  }
+  .header-icon {
+    background: rgba(255,255,255,0.85);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff8551;
+    font-size: 1.35rem;
+    margin-left: 6px;
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.18s;
+    position: relative;
+  }
+  .header-icon:hover {
+    background: #fffbe6;
+    color: #ff6a1a;
+    box-shadow: 0 2px 8px #ff8551;
+    transform: scale(1.08);
+    text-decoration: none;
+  }
+  .cart-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: #ff6a1a;
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    border-radius: 50%;
+    padding: 1.5px 6px 1.5px 6px;
+    box-shadow: 0 2px 8px #ff8551;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .hotline-box {
+    background: rgba(255,255,255,0.85);
+    border-radius: 18px;
+    padding: 6px 16px;
+    color: #ff8551;
+    font-weight: 700;
+    font-size: 1rem;
+    box-shadow: 0 2px 8px #ff8551;
+    margin-right: 8px;
+    transition: background 0.18s, color 0.18s;
+  }
+  .hotline-box:hover {
+    background: #fffbe6;
+    color: #ff6a1a;
+  }
+  /* Offcanvas và menu sản phẩm giữ nguyên style cải tiến trước đó */
+  .offcanvas.offcanvas-start {
+    max-width: 320px;
+    box-shadow: 2px 0 24px rgba(255,133,81,0.10);
+    border-top-right-radius: 18px;
+    border-bottom-right-radius: 18px;
+    overflow: hidden;
+  }
+  .offcanvas-header {
+    border-bottom: 1.5px solid #ffe5d0;
+    box-shadow: 0 2px 8px rgba(255,133,81,0.04);
+  }
+  .offcanvas-title i {
+    margin-right: 8px;
+  }
+  .list-group {
+    margin-top: 8px;
+  }
+  .menu-mobile-item {
+    color: #ff8551 !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1.12rem;
+    padding: 16px 0 16px 24px;
+    border-radius: 10px;
+    display: block;
+    text-decoration: none;
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.18s;
+    position: relative;
+    letter-spacing: 0.5px;
+    opacity: 0;
+    transform: translateX(-24px);
+    animation: none;
+  }
+  .offcanvas.show .menu-mobile-item {
+    animation: fadeInMenu 0.5s cubic-bezier(.4,2,.6,1) forwards;
+  }
+  .offcanvas.show .menu-mobile-item:nth-child(1) { animation-delay: 0.05s; }
+  .offcanvas.show .menu-mobile-item:nth-child(2) { animation-delay: 0.12s; }
+  .offcanvas.show .menu-mobile-item:nth-child(3) { animation-delay: 0.19s; }
+  .offcanvas.show .menu-mobile-item:nth-child(4) { animation-delay: 0.26s; }
+  .offcanvas.show .menu-mobile-item:nth-child(5) { animation-delay: 0.33s; }
+  @keyframes fadeInMenu {
+    from { opacity: 0; transform: translateX(-24px);}
+    to   { opacity: 1; transform: translateX(0);}
+  }
+  .menu-mobile-item:hover, .menu-mobile-item:focus {
+    background: #fffbe6;
+    color: #ff6a1a !important;
+    box-shadow: 0 4px 16px rgba(255,133,81,0.13);
+    text-decoration: none;
+    transform: scale(1.04);
+    transition: transform 0.18s, background 0.18s, color 0.18s, box-shadow 0.18s;
+  }
+  .menu-mobile-item.active, .list-group-item.active .menu-mobile-item {
+    background: #ff8551;
+    color: #fff !important;
+    box-shadow: 0 2px 12px rgba(255,133,81,0.13);
+  }
+  .list-group-item {
+    border: none;
+    border-bottom: 1px solid #ffe5d0;
+    background: #fff;
+    padding: 0 8px;
+    transition: background 0.18s;
+  }
+  .list-group-item:last-child {
+    border-bottom: none;
+  }
+.menu-dropdown-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.menu-dropdown-list {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 54px;
+  min-width: 200px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(255,133,81,0.10);
+  border: 1.5px solid #ffe5d0;
+  z-index: 9999;
+  padding: 6px 0;
+  flex-direction: column;
+  animation: fadeInMenu 0.22s;
+}
+.menu-dropdown-wrapper:hover .menu-dropdown-list,
+.menu-dropdown-wrapper:focus-within .menu-dropdown-list {
+  display: flex;
+}
+.dropdown-product-item {
+  color: #ff8551;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 1.02rem;
+  padding: 8px 20px 8px 20px;
+  border-radius: 7px;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  margin: 0 2px;
+  display: block;
+}
+.dropdown-product-item:hover, .dropdown-product-item:focus {
+  background: #fffbe6;
+  color: #ff6a1a;
+}
+@media (max-width: 991.98px) {
+  .menu-dropdown-list { display: none !important; }
+  .d-none.d-lg-flex { display: none !important; }
+  .d-lg-none { display: inline-flex !important; }
+}
+@media (min-width: 992px) {
+  .d-none.d-lg-flex { display: inline-flex !important; }
+  .d-lg-none { display: none !important; }
+}
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var offcanvas = document.getElementById('offcanvasProductMenu');
+    if (offcanvas) {
+      offcanvas.addEventListener('hidden.bs.offcanvas', function () {
+        var items = offcanvas.querySelectorAll('.menu-mobile-item');
+        items.forEach(function(item) {
+          item.style.opacity = 0;
+          item.style.transform = 'translateX(-24px)';
+        });
+      });
+    }
+  });
+</script>
+<!-- Bootstrap JS and Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>

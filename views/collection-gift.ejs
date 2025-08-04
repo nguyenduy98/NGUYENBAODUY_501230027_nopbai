@@ -1,0 +1,88 @@
+<%- include('./includes/head.ejs') %>
+<link rel="stylesheet" href="/css/product.css">
+</head>
+<body>
+  <%- include('./includes/navigation.ejs') %>
+  <%- include('./includes/category-navbar.ejs') %>
+
+  <!-- Banner Slider -->
+  <div class="d-flex justify-content-center" style="width:100%;">
+    <div id="mainBannerCarousel" class="carousel slide" data-bs-ride="carousel" style="background:#ffe5d0; width:1200px; max-width:100%; border-radius:18px; overflow:hidden; margin:32px 0 0 0;">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="/images/banner1.jpg" class="d-block w-100" alt="Banner 1" style="max-height:420px;object-fit:cover;">
+        </div>
+        <div class="carousel-item">
+          <img src="/images/banner2.jpg" class="d-block w-100" alt="Banner 2" style="max-height:420px;object-fit:cover;">
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#mainBannerCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#mainBannerCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tiêu đề và dropdown sắp xếp duy nhất -->
+  <div class="container mt-4">
+    <div class="product-list-title" style="font-size:2rem;color:#faf9f8;font-weight:600;">
+      Quà tặng trái cây
+    </div>
+    <div class="d-flex justify-content-end mt-2">
+      <form method="GET">
+        <select name="sort" class="form-select" style="width: 220px;" onchange="this.form.submit()">
+          <option value="">Sắp xếp</option>
+          <option value="featured" <%= sort === 'featured' ? 'selected' : '' %>>Sản phẩm nổi bật</option>
+          <option value="price-asc" <%= sort === 'price-asc' ? 'selected' : '' %>>Giá: Tăng dần</option>
+          <option value="price-desc" <%= sort === 'price-desc' ? 'selected' : '' %>>Giá: Giảm dần</option>
+          <option value="name-asc" <%= sort === 'name-asc' ? 'selected' : '' %>>Tên: A-Z</option>
+          <option value="name-desc" <%= sort === 'name-desc' ? 'selected' : '' %>>Tên: Z-A</option>
+          <option value="oldest" <%= sort === 'oldest' ? 'selected' : '' %>>Cũ nhất</option>
+          <option value="newest" <%= sort === 'newest' ? 'selected' : '' %>>Mới nhất</option>
+          <option value="bestseller" <%= sort === 'bestseller' ? 'selected' : '' %>>Bán chạy nhất</option>
+          <option value="stock-desc" <%= sort === 'stock-desc' ? 'selected' : '' %>>Tồn kho giảm dần</option>
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <!-- Danh sách sản phẩm -->
+  
+    <div class="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 g-3 mt-3">
+        <% for (let product of products) { %>
+          <div class="col">
+            <div class="product-card product-link" data-href="/products/<%= product._id %>" style="cursor:pointer;">
+              <img src="<%= product.imgUrl || '/images/default-product.jpg' %>" alt="<%= product.title %>">
+              <div class="product-name"><%= product.title %></div>
+              <div class="product-code"><%= product.code || '' %></div>
+              <div class="product-price"><%= product.price ? Number(product.price).toLocaleString('vi-VN') : 0 %>₫</div>
+              <% if (product.stock === 0) { %>
+                <div class="product-badge">Tạm hết hàng</div>
+                <div class="product-badge" style="position:static;display:block;margin:0 auto 8px auto;background:#eee;color:#888;font-size:1rem;font-weight:600;border-radius:12px;padding:4px 0;max-width:90%">Tạm hết hàng</div>
+                <button class="btn-disabled" disabled>Tạm hết hàng</button>
+              <% } else { %>
+                <form action="/cart" method="POST" onclick="event.stopPropagation();">
+                  <input type="hidden" name="productId" value="<%= product._id %>">
+                  <button type="submit" class="btn-buy"><i class="fas fa-shopping-cart"></i> Chọn mua</button>
+                </form>
+              <% } %>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <%- include('./includes/end.ejs') %>
+  <script>
+    document.querySelectorAll('.product-link').forEach(card => {
+      card.addEventListener('click', function() {
+        window.location.href = card.getAttribute('data-href');
+      });
+    });
+  </script> 

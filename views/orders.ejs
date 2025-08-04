@@ -1,0 +1,167 @@
+<%- include('includes/head.ejs') %>
+<link rel="stylesheet" href="/css/orders.css">
+</head>
+<body>
+<%- include('includes/navigation.ejs') %>
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 fw-bold">Quản lý đơn hàng</h1>
+    </div>
+    <div class="mb-3">
+      <ul class="nav nav-pills justify-content-center gap-2" id="orderStatusTabs">
+        <li class="nav-item"><a class="nav-link active" data-status="all" href="#">Tất cả</a></li>
+        <li class="nav-item"><a class="nav-link" data-status="pending" href="#">Chờ xử lý</a></li>
+        <li class="nav-item"><a class="nav-link" data-status="processing" href="#">Đang xử lý</a></li>
+        <li class="nav-item"><a class="nav-link" data-status="completed" href="#">Hoàn thành</a></li>
+        <li class="nav-item"><a class="nav-link" data-status="cancelled" href="#">Đã huỷ</a></li>
+      </ul>
+    </div>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th><input type="checkbox" id="checkAllOrders"></th>
+                            <th>Mã đơn</th>
+                            <th>Khách hàng</th>
+                            <th>Ngày đặt</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if (orders.length === 0) { %>
+                            <tr><td colspan="7" class="text-center">Chưa có đơn hàng nào</td></tr>
+                        <% } %>
+                        <% orders.forEach(order => { %>
+                        <tr>
+                            <td><input type="checkbox" class="order-checkbox" value="<%= order.id %>"></td>
+                            <td>#<%= order.id %></td>
+                            <td><%= order.customerInfo && order.customerInfo.name %></td>
+                            <td><%= formatDate(order.createdAt) %></td>
+                            <td><%= Number(order.totalPrice).toLocaleString('vi-VN') %> VNĐ</td>
+                            <td>
+                                <form action="/admin/orders/update-status" method="POST" class="d-flex align-items-center gap-2">
+                                    <input type="hidden" name="orderId" value="<%= order.id %>">
+                                    <select name="status" class="form-select form-select-sm">
+                                        <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>Chờ xử lý</option>
+                                        <option value="processing" <%= order.status === 'processing' ? 'selected' : '' %>>Đang xử lý</option>
+                                        <option value="completed" <%= order.status === 'completed' ? 'selected' : '' %>>Hoàn thành</option>
+                                        <option value="cancelled" <%= order.status === 'cancelled' ? 'selected' : '' %>>Đã huỷ</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td>
+                                <a href="/admin/orders/<%= order.id %>" class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="/admin/orders/<%= order.id %>/edit" class="btn btn-sm btn-outline-warning me-1">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <% if(order.status === 'cancel_requested') { %>
+                                  <form action="/admin/orders/update-status" method="POST" style="display:inline;" onsubmit="return confirm('Xác nhận huỷ đơn hàng này?');">
+                                    <input type="hidden" name="orderId" value="<%= order.id %>">
+                                    <input type="hidden" name="status" value="cancelled">
+                                    <button type="submit" class="btn btn-sm btn-danger">Xác nhận huỷ</button>
+                                  </form>
+                                <% } %>
+                                <form action="/admin/orders/delete" method="POST" style="display:inline;" onsubmit="return confirm('Bạn có chắc muốn xoá đơn hàng này?');">
+                                    <input type="hidden" name="orderId" value="<%= order.id %>">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+        <button id="deleteSelectedOrders" class="btn btn-danger" disabled>Xóa các đơn đã chọn</button>
+    </div>
+</div>
+<%- include('includes/end.ejs') %> 
+<script>
+  // Lọc đơn hàng theo trạng thái
+  document.querySelectorAll('#orderStatusTabs .nav-link').forEach(tab => {
+    tab.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('#orderStatusTabs .nav-link').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      const status = this.getAttribute('data-status');
+      document.querySelectorAll('tbody tr').forEach(row => {
+        if (status === 'all') {
+          row.style.display = '';
+        } else {
+          const select = row.querySelector('select[name="status"]');
+          if (select && select.value === status) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        }
+      });
+    });
+  });
+
+  // Xác nhận khi đổi trạng thái sang Hoàn thành hoặc Đã huỷ
+  document.querySelectorAll('select[name="status"]').forEach(select => {
+    const form = select.closest('form');
+    let lastValue = select.value;
+    select.addEventListener('change', function(e) {
+      const newValue = this.value;
+      if (newValue === 'completed' || newValue === 'cancelled') {
+        const confirmMsg = newValue === 'completed' ?
+          'Bạn có chắc chắn muốn chuyển trạng thái đơn hàng này sang Hoàn thành không?' :
+          'Bạn có chắc chắn muốn huỷ đơn hàng này không?';
+        if (!confirm(confirmMsg)) {
+          this.value = lastValue;
+          e.preventDefault();
+          return false;
+        }
+      }
+      lastValue = newValue;
+      form.submit();
+    });
+  });
+
+  // Xử lý tick chọn tất cả và xóa nhiều đơn hàng
+  const checkAll = document.getElementById('checkAllOrders');
+  const checkboxes = document.querySelectorAll('.order-checkbox');
+  const deleteBtn = document.getElementById('deleteSelectedOrders');
+
+  checkAll.addEventListener('change', function() {
+    checkboxes.forEach(cb => cb.checked = this.checked);
+    deleteBtn.disabled = !Array.from(checkboxes).some(cb => cb.checked);
+  });
+
+  checkboxes.forEach(cb => {
+    cb.addEventListener('change', function() {
+      checkAll.checked = Array.from(checkboxes).every(cb => cb.checked);
+      deleteBtn.disabled = !Array.from(checkboxes).some(cb => cb.checked);
+    });
+  });
+
+  deleteBtn.addEventListener('click', function() {
+    if (!confirm('Bạn có chắc muốn xóa các đơn đã chọn?')) return;
+    const selected = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+    fetch('/admin/orders/delete-multiple', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderIds: selected })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        location.reload();
+      } else {
+        alert(data.message || 'Lỗi khi xóa đơn hàng!');
+      }
+    });
+  });
+</script> 

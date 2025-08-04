@@ -1,0 +1,200 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/orders.css">
+    <link rel="stylesheet" href="/css/admin-edit-order.css">
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+    
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-10 mx-auto">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 fw-bold">Chỉnh sửa đơn hàng #<%= order.id %></h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="/admin">Admin</a></li>
+                            <li class="breadcrumb-item"><a href="/admin/orders">Đơn hàng</a></li>
+                            <li class="breadcrumb-item"><a href="/admin/orders/<%= order.id %>">Chi tiết</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Chỉnh sửa</li>
+                        </ol>
+                    </nav>
+                </div>
+                
+                <form action="/admin/orders/<%= order.id %>/edit" method="POST">
+                    <div class="row">
+                        <div class="col-md-8 mx-auto">
+                            <!-- Thông tin khách hàng -->
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-user me-2"></i>Chỉnh sửa thông tin khách hàng
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="customerName" class="form-label">Họ tên *</label>
+                                        <input type="text" class="form-control" id="customerName" name="customerName" 
+                                               value="<%= order.customerInfo.name %>" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="customerEmail" class="form-label">Email *</label>
+                                        <input type="email" class="form-control" id="customerEmail" name="customerEmail" 
+                                               value="<%= order.customerInfo.email %>" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="customerPhone" class="form-label">Số điện thoại *</label>
+                                        <input type="tel" class="form-control" id="customerPhone" name="customerPhone" 
+                                               value="<%= order.customerInfo.phone %>" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="customerAddress" class="form-label">Địa chỉ *</label>
+                                        <textarea class="form-control" id="customerAddress" name="customerAddress" 
+                                                  rows="3" required><%= order.customerInfo.address %></textarea>
+                                    </div>
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-md-4">
+                                            <label for="province" class="form-label">Tỉnh/Thành *</label>
+                                            <select class="form-select" name="province" id="province" required>
+                                                <option value="">Chọn tỉnh / thành</option>
+                                                <option value="79|TP Hồ Chí Minh" <%= order.customerInfo.provinceName === 'TP Hồ Chí Minh' ? 'selected' : '' %>>TP Hồ Chí Minh</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="district" class="form-label">Quận/Huyện *</label>
+                                            <select class="form-select" name="district" id="district" required>
+                                                <option value="">Chọn quận / huyện</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="ward" class="form-label">Phường/Xã *</label>
+                                            <select class="form-select" name="ward" id="ward" required>
+                                                <option value="">Chọn phường / xã</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!-- Hidden inputs để lưu tên địa chỉ -->
+                                    <input type="hidden" id="provinceNameHidden" name="provinceName" value="<%= order.customerInfo.provinceName || '' %>">
+                                    <input type="hidden" id="districtNameHidden" name="districtName" value="<%= order.customerInfo.districtName || '' %>">
+                                    <input type="hidden" id="wardNameHidden" name="wardName" value="<%= order.customerInfo.wardName || '' %>">
+                                </div>
+                            </div>
+
+                            <!-- Nút điều khiển -->
+                            <div class="d-flex justify-content-between">
+                                <a href="/admin/orders/<%= order.id %>" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-1"></i>Quay lại
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Lưu thay đổi
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<%- include('../includes/end.ejs') %>
+
+<script>
+// Biến lưu dữ liệu địa chỉ
+let selectedProvinceName = '<%= order.customerInfo.provinceName || "" %>';
+let selectedDistrictName = '<%= order.customerInfo.districtName || "" %>';
+let selectedWardName = '<%= order.customerInfo.wardName || "" %>';
+
+// Hàm load dữ liệu tỉnh/thành phố (chỉ cho phép TPHCM)
+function loadProvinces() {
+    const select = document.getElementById('province');
+    // Chỉ thêm TP Hồ Chí Minh
+    const option = document.createElement('option');
+    option.value = '79|TP Hồ Chí Minh';
+    option.textContent = 'TP Hồ Chí Minh';
+    select.appendChild(option);
+}
+
+// Hàm load dữ liệu quận/huyện
+function loadDistricts(provinceValue) {
+    const [provinceCode, provinceName] = provinceValue.split('|');
+    selectedProvinceName = provinceName;
+    document.getElementById('provinceNameHidden').value = provinceName;
+    fetch(`https://provinces.open-api.vn/api/p/${provinceCode}?depth=2`)
+        .then(response => response.json())
+        .then(data => {
+            const select = document.getElementById('district');
+            select.innerHTML = '<option value="">Chọn Quận/Huyện</option>';
+            data.districts.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district.code + '|' + district.name;
+                option.textContent = district.name;
+                // Chọn quận/huyện hiện tại nếu có
+                if (district.name === selectedDistrictName) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+            // Load phường/xã nếu đã có quận/huyện
+            if (selectedDistrictName) {
+                const districtValue = select.value;
+                if (districtValue) {
+                    loadWards(districtValue);
+                }
+            }
+        });
+}
+
+// Hàm load dữ liệu phường/xã
+function loadWards(districtValue) {
+    const [districtCode, districtName] = districtValue.split('|');
+    selectedDistrictName = districtName;
+    document.getElementById('districtNameHidden').value = districtName;
+    fetch(`https://provinces.open-api.vn/api/d/${districtCode}?depth=2`)
+        .then(response => response.json())
+        .then(data => {
+            const select = document.getElementById('ward');
+            select.innerHTML = '<option value="">Chọn Phường/Xã</option>';
+            data.wards.forEach(ward => {
+                const option = document.createElement('option');
+                option.value = ward.code + '|' + ward.name;
+                option.textContent = ward.name;
+                // Chọn phường/xã hiện tại nếu có
+                if (ward.name === selectedWardName) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+        });
+}
+
+// Cập nhật tên phường/xã
+function updateWardName(wardValue) {
+    const [wardCode, wardName] = wardValue.split('|');
+    selectedWardName = wardName;
+    document.getElementById('wardNameHidden').value = wardName;
+}
+
+// Event listeners
+document.getElementById('province').addEventListener('change', function() {
+    loadDistricts(this.value);
+});
+
+document.getElementById('district').addEventListener('change', function() {
+    loadWards(this.value);
+});
+
+document.getElementById('ward').addEventListener('change', function() {
+    updateWardName(this.value);
+});
+
+// Load dữ liệu tỉnh/thành phố khi trang được load
+document.addEventListener('DOMContentLoaded', function() {
+    loadProvinces();
+    // Load quận/huyện nếu đã có tỉnh/thành
+    if (selectedProvinceName) {
+        loadDistricts('79|TP Hồ Chí Minh');
+    }
+});
+
+
+</script> 

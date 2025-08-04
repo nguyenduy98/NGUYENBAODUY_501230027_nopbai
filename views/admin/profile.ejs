@@ -1,0 +1,34 @@
+<%- include('../includes/head.ejs') %>
+<body>
+<%- include('../includes/navigation.ejs') %>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white text-center py-4">
+                    <h2 class="fw-bold mb-0">Thông tin Admin</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 text-center">
+                        <i class="fas fa-user-shield fa-4x text-primary mb-3"></i>
+                    </div>
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item">
+                            <strong>Họ tên:</strong> <%= user.name %>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Email:</strong> <%= user.email %>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Vai trò:</strong> <span class="badge bg-danger">Quản trị viên</span>
+                        </li>
+                    </ul>
+                    <form action="/logout" method="POST" class="d-grid gap-2 mt-3">
+                        <button type="submit" class="btn btn-outline-danger">Đăng xuất</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('../includes/end.ejs') %> 

@@ -1,0 +1,106 @@
+<%- include('includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/cart.css">
+</head>
+
+<body>
+    <%- include('includes/navigation.ejs') %>
+    <div class="container py-4">
+      <div class="row g-4">
+        <!-- Cột trái: Danh sách sản phẩm -->
+        <div class="col-lg-8">
+          <h3 class="fw-bold mb-3" style="color:#ff4444">Giỏ hàng của bạn</h3>
+                        <% if (products && products.length > 0) { %>
+            <div class="mb-2">Bạn đang có <b><%= products.length %></b> trong giỏ hàng</div>
+            <div class="cart-list mb-3">
+                                <% products.forEach(p => { %>
+                <div class="cart-item d-flex align-items-center justify-content-between mb-3 p-3 bg-white rounded shadow-sm">
+                                            <div class="d-flex align-items-center">
+                    <img src="<%= p.imgUrl || '/images/default-product.jpg' %>" alt="<%= p.title %>" class="rounded me-3" style="width:80px;height:80px;object-fit:cover;">
+                                                <div>
+                      <div class="fw-bold mb-1"><%= p.title || 'Không có tên' %></div>
+                      <div class="text-muted mb-2" style="font-size:15px"><%= Number(p.price || 0).toLocaleString('vi-VN') %>₫</div>
+                      <div class="d-flex align-items-center gap-2">
+                        <form action="/cart-delete-item" method="POST" class="d-inline">
+                          <input type="hidden" value="<%= p.id %>" name="productId">
+                          <button class="btn btn-link text-danger p-0" style="font-size:14px;">Xóa</button>
+                        </form>
+                        <div class="d-flex align-items-center border rounded px-2 py-1" style="background:#fafbfc;">
+                                                            <form action="/update-quantity" method="POST" class="d-inline">
+                                                                <input type="hidden" name="productId" value="<%= p.id %>">
+                                                                <input type="hidden" name="action" value="decrease">
+                            <button type="submit" class="btn btn-link p-0" style="font-size:18px;">-</button>
+                                                            </form>
+                          <span class="mx-2" style="min-width:24px;display:inline-block;text-align:center"><%= p.qty || 1 %></span>
+                                                            <form action="/update-quantity" method="POST" class="d-inline">
+                                                                <input type="hidden" name="productId" value="<%= p.id %>">
+                                                                <input type="hidden" name="action" value="increase">
+                            <button type="submit" class="btn btn-link p-0" style="font-size:18px;">+</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                  <div class="fw-bold" style="font-size:18px;color:#ff4444">
+                    <%= (Number(p.price || 0) * Number(p.qty || 1)).toLocaleString('vi-VN') %>₫
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+            <!-- Ghi chú đơn hàng -->
+            <div class="bg-light rounded p-3 mb-3">
+              <div class="mb-2 fw-bold">Ghi chú đơn hàng</div>
+              <div class="mb-2 text-muted" style="font-size:14px;">
+                <b>Lưu ý:</b> Khách hàng đặt quà tặng trái cây, vui lòng ghi rõ thông tin của người được tặng và người đặt để Morning Fruit thuận tiện liên hệ.
+              </div>
+              <textarea class="form-control" rows="2" placeholder="Ghi chú cho đơn hàng..."></textarea>
+                                </div>
+            <!-- Xuất hóa đơn -->
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="exportInvoice">
+              <label class="form-check-label" for="exportInvoice">Xuất hoá đơn cho đơn hàng</label>
+                            </div>
+                        <% } else { %>
+                            <div class="text-center py-5">
+                                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                                <h5>Giỏ hàng trống</h5>
+                                <a href="/" class="btn btn-primary mt-3">
+                                    <i class="fas fa-shopping-bag"></i> Tiếp tục mua sắm
+                                </a>
+                            </div>
+                        <% } %>
+                    </div>
+        <!-- Cột phải: Thông tin đơn hàng -->
+        <div class="col-lg-4">
+          <div class="bg-white rounded shadow-sm p-4 mb-3">
+            <div class="mb-3 fw-bold" style="font-size:17px;">Thông tin đơn hàng</div>
+            <div class="mb-2" style="font-size:15px;">THỜI GIAN GIAO HÀNG</div>
+            <div class="mb-3">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="deliveryTime" id="deliveryNow" checked>
+                <label class="form-check-label" for="deliveryNow">Giao khi có hàng</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="deliveryTime" id="deliveryChoose">
+                <label class="form-check-label" for="deliveryChoose">Chọn thời gian</label>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div class="fw-bold">Tổng tiền:</div>
+              <div class="fw-bold" style="font-size:22px;color:#ff4444">
+                <%= Number(totalPrice || 0).toLocaleString('vi-VN') %>₫
+              </div>
+            </div>
+            <ul class="mb-3" style="font-size:14px;color:#666;">
+              <li>Phí vận chuyển sẽ được tính ở trang thanh toán.</li>
+              <li>Bạn cũng có thể nhập mã giảm giá ở trang thanh toán.</li>
+            </ul>
+            <a href="/checkout" class="btn btn-danger w-100 py-2 fw-bold" style="font-size:17px;">THANH TOÁN</a>
+          </div>
+          <div class="bg-light rounded p-3" style="font-size:15px;">
+            <div class="fw-bold mb-1">Chính sách mua hàng</div>
+            Hiện chúng tôi chỉ miễn phí vận chuyển với đơn hàng có giá trị từ <b>300.000₫</b> trở lên.
+                </div>
+            </div>
+        </div>
+    </div>
+<%- include('includes/end.ejs') %> 

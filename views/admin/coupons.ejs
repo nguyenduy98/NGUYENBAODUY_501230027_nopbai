@@ -1,0 +1,46 @@
+<%- include('../includes/head.ejs') %>
+<body>
+<%- include('../includes/navigation.ejs') %>
+<div class="container py-4">
+  <h2 class="mb-4">Quản lý mã giảm giá</h2>
+  <a href="/admin/coupons/add" class="btn btn-success mb-3">+ Thêm mã mới</a>
+  <table class="table table-bordered table-hover">
+    <thead class="table-primary">
+      <tr>
+        <th>Mã</th>
+        <th>Loại</th>
+        <th>Giá trị</th>
+        <th>Đơn tối thiểu</th>
+        <th>Giảm tối đa</th>
+        <th>Số lượng</th>
+        <th>Đã dùng</th>
+        <th>User đã dùng</th>
+        <th>Bắt đầu</th>
+        <th>Kết thúc</th>
+        <th>Xóa</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% coupons.forEach(c => { %>
+        <tr>
+          <td><%= c.code %></td>
+          <td><%= c.type === 'percent' ? 'Phần trăm' : 'Cố định' %></td>
+          <td><%= c.type === 'percent' ? c.value + '%' : c.value.toLocaleString('vi-VN') + '₫' %></td>
+          <td><%= c.minOrder ? c.minOrder.toLocaleString('vi-VN') + '₫' : '-' %></td>
+          <td><%= c.maxDiscount ? c.maxDiscount.toLocaleString('vi-VN') + '₫' : '-' %></td>
+          <td><%= c.quantity %></td>
+          <td><%= c.used %></td>
+          <td><%= c.usedBy && c.usedBy.length > 0 ? c.usedBy.length + ' user' : '-' %></td>
+          <td><%= c.startDate ? new Date(c.startDate).toLocaleDateString('vi-VN') : '-' %></td>
+          <td><%= c.endDate ? new Date(c.endDate).toLocaleDateString('vi-VN') : '-' %></td>
+          <td>
+            <form method="POST" action="/admin/coupons/delete/<%= c._id %>" onsubmit="return confirm('Xóa mã này?');">
+              <button class="btn btn-danger btn-sm" type="submit"><i class="fas fa-trash"></i></button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+<%- include('../includes/end.ejs') %> 

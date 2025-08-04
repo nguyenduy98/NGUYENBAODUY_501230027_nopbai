@@ -1,0 +1,53 @@
+<div class="category-navbar-outer" style="width:100%; background:#fff; border-bottom:1px solid #ffe5d0; margin-bottom:0; display:flex; justify-content:center;">
+  <div class="category-navbar" style="background:#fff; width:1200px; max-width:100%; border-radius:18px; box-shadow:0 4px 32px rgba(255,133,81,0.08); margin:0;">
+    <div class="d-flex justify-content-center align-items-center flex-wrap" style="gap:18px; padding:12px 0;">
+      <a href="/" class="category-nav-item<%= path === '/' ? ' active' : '' %>"><i class="fas fa-home"></i> Trang chủ</a>
+      <a href="#" class="category-nav-item">Trái ngon hôm nay</a>
+      <a href="/collections/trai-cay-viet-nam" class="category-nav-item<%= path === '/collections/trai-cay-viet-nam' ? ' active' : '' %>">Trái cây Việt Nam</a>
+      <a href="/collections/trai-cay-nhap-khau" class="category-nav-item<%= path === '/collections/trai-cay-nhap-khau' ? ' active' : '' %>">Trái cây nhập khẩu</a>
+      <a href="/collections/qua-tang-trai-cay" class="category-nav-item<%= path === '/collections/qua-tang-trai-cay' ? ' active' : '' %>">Quà tặng trái cây</a>
+    </div>
+  </div>
+</div>
+<style>
+  .category-navbar {
+    box-shadow: 0 2px 8px rgba(255,133,81,0.04);
+    z-index: 10;
+    border-radius: 18px;
+    background: #fff;
+  }
+  .category-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 130px;
+    height: 90px;
+    padding: 0;
+    border-radius: 12px;
+    color: #ff8551;
+    font-weight: 600;
+    background: #fff;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s, border 0.2s;
+    font-size: 1.05rem;
+    border: 1.5px solid #ffe5d0;
+    text-align: center;
+  }
+  .category-nav-item i {
+    font-size: 1.3rem;
+    margin-bottom: 6px;
+  }
+  .category-nav-item.active {
+    background: #ff8551;
+    color: #fff;
+    border: 2px solid #ff8551;
+    box-shadow: 0 2px 8px rgba(255,133,81,0.08);
+  }
+  .category-nav-item:hover, .category-nav-item:focus {
+    background: #fffbe6;
+    color: #ff8551;
+    border: 2px solid #ffe5d0;
+    box-shadow: 0 2px 8px rgba(255,133,81,0.08);
+  }
+</style> 

@@ -1,0 +1,160 @@
+<%- include('./includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/product.css">
+</head>
+
+<body>
+    <%- include('./includes/navigation.ejs') %>
+    <div class="container py-4">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Trang chủ</a></li>
+          <li class="breadcrumb-item"><a href="/products" class="text-decoration-none">Quà tặng trái cây</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><%= product.title %></li>
+            </ol>
+        </nav>
+      <div class="row g-4">
+        <!-- Ảnh sản phẩm lớn và ảnh nhỏ -->
+        <div class="col-lg-6">
+          <div class="bg-white rounded shadow-sm p-3 mb-3 text-center">
+            <img src="<%= product.imgUrl || '/images/default-product.jpg' %>" alt="<%= product.title %>" style="width:100%;height:380px;object-fit:cover;border-radius:12px;">
+          </div>
+          <div class="d-flex gap-2 justify-content-center mb-3">
+            <img src="<%= product.imgUrl || '/images/default-product.jpg' %>" alt="thumb" class="rounded" style="width:60px;height:60px;object-fit:cover;">
+            <img src="<%= product.imgUrl || '/images/default-product.jpg' %>" alt="thumb" class="rounded" style="width:60px;height:60px;object-fit:cover;">
+                    </div>
+                </div>
+        <!-- Thông tin sản phẩm -->
+        <div class="col-lg-6">
+          <h3 class="fw-bold mb-2" style="color:#ff4444"><%= product.title %></h3>
+          <div class="mb-2" style="font-size:15px;">
+            Mã sản phẩm: <span class="text-secondary">SP<%= product._id ? product._id.toString().slice(-6) : '000000' %></span>
+            | Tình trạng: <span class="<%= product.stock > 0 ? 'text-success' : 'text-danger' %> fw-bold"><%= product.stock > 0 ? 'Còn hàng' : 'Hết hàng' %></span>
+                            </div>
+          <div class="mb-3">
+            <span class="fw-bold" style="font-size:26px;color:#ff4444"><%= Number(product.price).toLocaleString('vi-VN') %>₫<% if (product.isKg) { %>/kg<% } %></span>
+                        </div>
+          <% if (product.stock > 0) { %>
+          <form action="/cart" method="POST" class="d-flex align-items-center gap-2 mb-4">
+                                <input type="hidden" name="productId" value="<%= product._id %>">
+            <button type="submit" class="btn btn-warning fw-bold px-4" style="font-size:17px;">THÊM VÀO GIỎ</button>
+                            </form>
+          <% } else { %>
+          <div class="alert alert-danger fw-bold" style="font-size:17px;">Sản phẩm đã hết hàng</div>
+          <% } %>
+          <div class="row g-3">
+            <div class="col-md-7">
+              <div class="mb-2 fw-bold" style="color:#ff4444;font-size:15px;">THÔNG TIN SẢN PHẨM</div>
+              <div class="bg-white rounded p-3 border">
+                <div class="fw-bold mb-2">Mô tả sản phẩm</div>
+                <div style="font-size:15px;white-space:pre-line"><%= product.description %></div>
+                <div class="mt-2" style="font-size:14px;color:#888;">
+                  <b>Hướng dẫn bảo quản:</b> Nên sử dụng ngay để đảm bảo độ tươi ngon của trái cây. Bảo quản hộp ở nơi thoáng mát.
+                </div>
+            </div>
+        </div>
+            <div class="col-md-5">
+              <div class="mb-2 fw-bold" style="color:#ff4444;font-size:15px;">DỊCH VỤ GIAO HÀNG</div>
+              <div class="bg-white rounded p-3 border" style="font-size:15px;">
+                <div class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Cam kết 100% chính hãng</div>
+                <div class="mb-2"><i class="fas fa-truck text-primary me-2"></i>Giao hàng dự kiến:<br><b>Thứ 2 - Chủ nhật từ 8h00 - 21h00</b></div>
+                <div><i class="fas fa-headset text-info me-2"></i>Hỗ trợ 24/7<br>Với các kênh facebook, instagram & phone</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Hiển thị đánh giá sản phẩm -->
+<div class="container mb-5">
+  <h4 class="mt-4">Đánh giá sản phẩm</h4>
+  <% if (reviews && reviews.length > 0) { %>
+    <% reviews.forEach(function(review) { %>
+      <div class="border rounded p-3 mb-3">
+        <div class="mb-2">
+          <b style="color: #ffbb00; font-size: 18px;">
+            <%= '★'.repeat(review.rating) %><%= '☆'.repeat(5 - review.rating) %>
+          </b>
+          <span class="text-muted" style="font-size: 0.9em;">
+            <%= new Date(review.createdAt).toLocaleString('vi-VN') %>
+          </span>
+          <span class="ms-2 fw-bold" style="color:#007bff;font-size:0.95em;">- <%= review.userName %></span>
+        </div>
+        <div class="mb-2"><%= review.comment %></div>
+        
+        <% if (review.adminReply) { %>
+          <div class="bg-light border-start border-primary border-4 ps-3 py-2 mt-2">
+            <div class="d-flex align-items-center mb-1">
+              <i class="fas fa-shield-alt text-primary me-2"></i>
+              <span class="fw-bold text-primary">Admin</span>
+              <small class="text-muted ms-2">
+                <%= new Date(review.adminReply.createdAt).toLocaleString('vi-VN') %>
+              </small>
+            </div>
+            <div><%= review.adminReply.content %></div>
+          </div>
+        <% } %>
+      </div>
+    <% }) %>
+  <% } else { %>
+    <div class="text-muted">Chưa có đánh giá nào cho sản phẩm này.</div>
+  <% } %>
+  <% if (user) { %>
+    <form id="reviewForm" class="mt-4" method="POST" action="/reviews">
+      <input type="hidden" name="productId" value="<%= product._id %>">
+      <div class="mb-2">
+        <label for="rating" class="form-label">Chọn số sao</label>
+        <select name="rating" id="rating" class="form-select" required>
+          <option value="">Chọn số sao</option>
+          <option value="5">5 - Tuyệt vời</option>
+          <option value="4">4 - Tốt</option>
+          <option value="3">3 - Bình thường</option>
+          <option value="2">2 - Tệ</option>
+          <option value="1">1 - Rất tệ</option>
+        </select>
+      </div>
+      <div class="mb-2">
+        <label for="comment" class="form-label">Nhận xét</label>
+        <textarea name="comment" id="comment" class="form-control" rows="2" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+    </form>
+    <script>
+      document.getElementById('reviewForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const productId = form.productId.value;
+        const rating = form.rating.value;
+        const comment = form.comment.value;
+        console.log('DEBUG REVIEW FORM:', { productId, rating, comment });
+        const res = await fetch('/reviews', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productId, rating, comment })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Đánh giá thành công!');
+          location.reload();
+        } else {
+          alert(data.message || 'Lỗi khi gửi đánh giá!');
+        }
+      });
+    </script>
+  <% } else { %>
+    <div class="alert alert-info mt-4">Bạn cần <a href="/login">đăng nhập</a> để đánh giá sản phẩm.</div>
+  <% } %>
+</div>
+    <script>
+      function changeQty(delta) {
+            var input = document.getElementById('quantity');
+            var value = parseInt(input.value, 10);
+        var min = parseInt(input.min) || 1;
+        var max = parseInt(input.max) || 99;
+        value = isNaN(value) ? min : value;
+        value += delta;
+        if (value < min) value = min;
+        if (value > max) value = max;
+            input.value = value;
+        }
+    </script>
+<%- include('./includes/end.ejs') %>

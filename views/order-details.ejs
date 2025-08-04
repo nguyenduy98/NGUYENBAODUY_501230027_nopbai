@@ -1,0 +1,273 @@
+<%- include('includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/orders.css">
+</head>
+
+<body>
+    <%- include('includes/navigation.ejs') %>
+    
+    <div class="container py-5">
+        <div class="row">
+            <div class="col-md-8 mx-auto">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 fw-bold">Chi tiết đơn hàng</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
+                            <li class="breadcrumb-item"><a href="/orders">Đơn hàng</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Chi tiết</li>
+                        </ol>
+                    </nav>
+                </div>
+                
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-white py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold">
+                                <i class="fas fa-shopping-bag text-primary me-2"></i>
+                                Đơn hàng #<%= order.id %>
+                            </h5>
+                            <span class="order-status status-<%= order.status %>">
+                                <%= order.status === 'pending' ? 'Chờ xử lý' : 
+                                   order.status === 'processing' ? 'Đang xử lý' :
+                                   order.status === 'completed' ? 'Hoàn thành' :
+                                   order.status === 'cancelled' ? 'Đã hủy' :
+                                   'Đã hủy' %>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">Thông tin đơn hàng</h6>
+                                <p class="mb-1"><strong>Mã đơn hàng:</strong> #<%= order.id %></p>
+                                <p class="mb-1">
+                                    <strong>Ngày đặt:</strong> 
+                                    <%= new Date(order.createdAt).toLocaleString('vi-VN') %>
+                                </p>
+                                <p class="mb-1">
+                                    <strong>Trạng thái:</strong> 
+                                    <span class="text-<%= 
+                                        order.status === 'pending' ? 'warning' : 
+                                        order.status === 'processing' ? 'primary' :
+                                        order.status === 'completed' ? 'success' : 
+                                        order.status === 'cancelled' ? 'danger' : 'danger' 
+                                    %>">
+                                        <%= order.status === 'pending' ? 'Chờ xử lý' : 
+                                           order.status === 'processing' ? 'Đang xử lý' :
+                                           order.status === 'completed' ? 'Hoàn thành' : 
+                                           order.status === 'cancelled' ? 'Đã hủy' : 'Đã hủy' %>
+                                    </span>
+                                </p>
+                                <a href="/orders/<%= order.id %>/invoice" class="btn btn-outline-primary btn-sm mt-2">
+                                    <i class="fas fa-file-download me-1"></i> Tải hóa đơn
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">Thông tin khách hàng</h6>
+                                <p class="mb-1"><strong>Họ tên:</strong> <%= order.customerInfo.name %></p>
+                                <p class="mb-1"><strong>Email:</strong> <%= order.customerInfo.email %></p>
+                                <p class="mb-1"><strong>Số điện thoại:</strong> <%= order.customerInfo.phone %></p>
+                                <p class="mb-1"><strong>Địa chỉ:</strong> <%= order.customerInfo.address %></p>
+                                <% if(order.customerInfo.wardName || order.customerInfo.districtName || order.customerInfo.provinceName) { %>
+                                  <p class="mb-1"><strong>Phường/Xã:</strong> <%= order.customerInfo.wardName || '' %></p>
+                                  <p class="mb-1"><strong>Quận/Huyện:</strong> <%= order.customerInfo.districtName || '' %></p>
+                                  <p class="mb-1"><strong>Tỉnh/Thành:</strong> <%= order.customerInfo.provinceName || '' %></p>
+                                <% } %>
+                            </div>
+                        </div>
+                        
+                        <h6 class="fw-bold mb-3">Sản phẩm đã đặt</h6>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col" style="width: 70px;">Ảnh</th>
+                                        <th scope="col">Sản phẩm</th>
+                                        <th scope="col" class="text-center">Giá</th>
+                                        <th scope="col" class="text-center">SL</th>
+                                        <th scope="col" class="text-end">Thành tiền</th>
+                                        <% if(order.status === 'completed') { %><th>Đánh giá</th><% } %>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% order.products.forEach(product => { %>
+                                        <tr>
+                                            <td>
+                                                <img src="<%= product.imgUrl || '/images/default-product.jpg' %>" 
+                                                    alt="<%= product.title %>" 
+                                                    class="img-thumbnail" 
+                                                    style="width: 50px; height: 50px; object-fit: cover;">
+                                            </td>
+                                            <td><%= product.title %></td>
+                                            <td class="text-center"><%= Number(product.price).toLocaleString('vi-VN') %> VNĐ</td>
+                                            <td class="text-center"><%= product.qty %></td>
+                                            <td class="text-end"><%= (Number(product.price) * Number(product.qty)).toLocaleString('vi-VN') %> VNĐ</td>
+                                            <% if(order.status === 'completed') { %>
+                                            <td>
+                                                <div class="review-block" data-product-id="<%= product.id || product._id || product.productId || '' %>">
+                                                    <!-- Nội dung đánh giá sẽ được load bằng JS -->
+                                                </div>
+                                            </td>
+                                            <% } %>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4" class="text-end fw-bold">Tạm tính:</td>
+                                        <td class="text-end">
+                                            <%= Number(order.subtotal || order.totalPrice).toLocaleString('vi-VN') %> VNĐ
+                                        </td>
+                                        <% if(order.status === 'completed') { %><td></td><% } %>
+                                    </tr>
+                                    <% if(order.appliedCoupon) { %>
+                                    <tr>
+                                        <td colspan="4" class="text-end text-success">
+                                            <i class="fas fa-tag me-1"></i>Mã giảm giá: <%= order.appliedCoupon.code %>
+                                        </td>
+                                        <td class="text-end text-success">
+                                            -<% if(order.appliedCoupon.type === 'percent') { %>
+                                                <%= order.appliedCoupon.value %>%
+                                            <% } else { %>
+                                                <%= Number(order.appliedCoupon.value).toLocaleString('vi-VN') %>₫
+                                            <% } %>
+                                        </td>
+                                        <% if(order.status === 'completed') { %><td></td><% } %>
+                                    </tr>
+                                    <% } %>
+                                    <% if(order.shippingFee && order.shippingFee > 0) { %>
+                                    <tr>
+                                        <td colspan="4" class="text-end">
+                                            <i class="fas fa-shipping-fast me-1"></i>Phí vận chuyển:
+                                        </td>
+                                        <td class="text-end">
+                                            <%= Number(order.shippingFee).toLocaleString('vi-VN') %> VNĐ
+                                        </td>
+                                        <% if(order.status === 'completed') { %><td></td><% } %>
+                                    </tr>
+                                    <% } else if(order.shippingFee === 0) { %>
+                                    <tr>
+                                        <td colspan="4" class="text-end text-success">
+                                            <i class="fas fa-shipping-fast me-1"></i>Miễn phí vận chuyển
+                                        </td>
+                                        <td class="text-end text-success">
+                                            0 VNĐ
+                                        </td>
+                                        <% if(order.status === 'completed') { %><td></td><% } %>
+                                    </tr>
+                                    <% } %>
+                                    <tr class="table-primary">
+                                        <td colspan="4" class="text-end fw-bold">Tổng cộng:</td>
+                                        <td class="text-end text-primary fw-bold">
+                                            <%= Number(order.totalPrice).toLocaleString('vi-VN') %> VNĐ
+                                        </td>
+                                        <% if(order.status === 'completed') { %><td></td><% } %>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-white text-end py-3">
+                        <a href="/orders" class="btn btn-outline-secondary me-2">
+                            <i class="fas fa-arrow-left me-1"></i> Quay lại
+                        </a>
+                        <a href="/orders/<%= order.id %>/invoice" class="btn btn-primary me-2">
+                            <i class="fas fa-file-invoice me-1"></i> Tải hóa đơn
+                        </a>
+                        <% if(typeof user !== 'undefined' && user && user.role === 'admin') { %>
+                            <a href="/admin/orders/<%= order.id %>/edit" class="btn btn-warning me-2">
+                                <i class="fas fa-edit me-1"></i> Chỉnh sửa
+                            </a>
+                        <% } %>
+                        <% if(order.status === 'pending') { %>
+                          <form action="/orders/<%= order.id %>/cancel" method="POST" class="d-inline" onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn hàng này?');">
+                            <button type="submit" class="btn btn-danger">
+                              <i class="fas fa-times me-1"></i>Hủy đơn hàng
+                            </button>
+                          </form>
+                        <% } %>
+                        <% if(order.status === 'processing') { %>
+                          <div class="alert alert-warning mb-0">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Đơn hàng đang được xử lý. Vui lòng liên hệ admin để hủy đơn hàng.
+                          </div>
+                        <% } %>
+                        <% if(order.status === 'cancelled') { %>
+                          <form action="/orders/<%= order.id %>/cancel-request" method="POST" class="d-inline" onsubmit="return confirm('Bạn chắc chắn muốn khôi phục đơn hàng này?');">
+                            <button type="submit" class="btn btn-success">
+                              <i class="fas fa-undo me-1"></i>Khôi phục đơn hàng
+                            </button>
+                          </form>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<%- include('includes/end.ejs') %> 
+<script>
+// Tải đánh giá và hiển thị form đánh giá cho từng sản phẩm
+<% if(order.status === 'completed') { %>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.review-block').forEach(function(block) {
+    const productId = block.getAttribute('data-product-id');
+    fetch('/reviews/api?orderId=<%= order.id %>&productId=' + productId)
+      .then(res => res.json())
+      .then(data => {
+        if(data.review) {
+          block.innerHTML = `<div class='text-success'>Đã đánh giá: <b>${data.review.rating} sao</b><br>${data.review.comment}</div>`;
+        } else {
+          block.innerHTML = `
+            <form class='review-form'>
+              <div class='mb-1'>
+                <select name='rating' class='form-select form-select-sm' required>
+                  <option value=''>Chọn số sao</option>
+                  <option value='5'>5 - Tuyệt vời</option>
+                  <option value='4'>4 - Tốt</option>
+                  <option value='3'>3 - Bình thường</option>
+                  <option value='2'>2 - Tệ</option>
+                  <option value='1'>1 - Rất tệ</option>
+                </select>
+              </div>
+              <input type='text' name='comment' class='form-control form-control-sm mb-1' placeholder='Nhận xét...'>
+              <button type='submit' class='btn btn-sm btn-primary'>Gửi đánh giá</button>
+            </form>
+          `;
+        }
+      });
+  });
+
+  document.addEventListener('submit', function(e) {
+    if(e.target.classList.contains('review-form')) {
+      e.preventDefault();
+      const form = e.target;
+      // Lấy productId từ div cha .review-block
+      const productId = form.closest('.review-block').getAttribute('data-product-id');
+      const rating = form.rating.value;
+      const comment = form.comment.value;
+      // Lấy orderId từ biến EJS
+      const orderId = '<%= order.id %>';
+      fetch('/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId,
+          orderId,
+          rating,
+          comment
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.success) {
+          form.outerHTML = `<div class='text-success'>Đã đánh giá: <b>${rating} sao</b><br>${comment}</div>`;
+        } else {
+          alert(data.message || 'Lỗi khi gửi đánh giá!');
+        }
+      });
+    }
+  });
+});
+<% } %>
+</script> 

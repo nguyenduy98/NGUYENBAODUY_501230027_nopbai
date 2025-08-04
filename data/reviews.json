@@ -1,0 +1,15 @@
+[
+  {
+    "productId": "6879613f99771fb4d2625ec3",
+    "userId": "687811138a569facba3118e4",
+    "orderId": null,
+    "rating": 5,
+    "comment": "oke",
+    "createdAt": "2025-07-29T20:34:34.601Z",
+    "_id": "1753821274601",
+    "adminReply": {
+      "content": "thanks",
+      "createdAt": "2025-07-29T20:39:45.460Z"
+    }
+  }
+]

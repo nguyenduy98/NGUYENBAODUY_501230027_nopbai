@@ -1,0 +1,97 @@
+<%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/forms.css">
+    <link rel="stylesheet" href="/css/product.css">
+</head>
+
+<body>
+    <%- include('../includes/navigation.ejs') %>
+
+    <main>
+        <% if (errorMessage) { %>
+            <div class="alert alert-danger">
+                <%= errorMessage %>
+            </div>
+        <% } %>
+        
+        <form class="product-form"
+            action="/admin/<% if (editing) { %>edit-product<% } else { %>add-product<% } %>" 
+            method="POST"
+            enctype="multipart/form-data">
+            
+            <div class="form-control">
+                <label for="title">Tên sản phẩm</label>
+                <input 
+                    class="<%= validationErrors.find(e => e.param === 'title') ? 'invalid' : '' %>"
+                    type="text" 
+                    name="title" 
+                    id="title"
+                    value="<% if (editing || hasError) { %><%= product.title %><% } %>">
+                <% if (validationErrors.find(e => e.param === 'title')) { %>
+                    <span class="error-text"><%= validationErrors.find(e => e.param === 'title').msg %></span>
+                <% } %>
+            </div>
+
+            <div class="form-control">
+                <label for="image">Hình ảnh sản phẩm</label>
+                <input 
+                    type="file" 
+                    name="image" 
+                    id="image"
+                    accept="image/*"
+                    <% if (!editing) { %>required<% } %>>
+                <% if (validationErrors.find(e => e.param === 'image')) { %>
+                    <span class="error-text"><%= validationErrors.find(e => e.param === 'image').msg %></span>
+                <% } %>
+                <% if (editing && product.imgUrl) { %>
+                    <div class="mt-2">
+                        <img src="<%= product.imgUrl %>" alt="Current Image" style="max-width: 200px;">
+                    </div>
+                <% } %>
+            </div>
+
+            <div class="form-control">
+                <label for="price">Giá (VNĐ)</label>
+                <input 
+                    class="<%= validationErrors.find(e => e.param === 'price') ? 'invalid' : '' %>"
+                    type="number" 
+                    name="price" 
+                    id="price" 
+                    min="0"
+                    value="<% if (editing || hasError) { %><%= product.price %><% } %>">
+                <% if (validationErrors.find(e => e.param === 'price')) { %>
+                    <span class="error-text"><%= validationErrors.find(e => e.param === 'price').msg %></span>
+                <% } %>
+            </div>
+
+            <div class="form-control">
+                <label for="description">Mô tả</label>
+                <textarea 
+                    class="<%= validationErrors.find(e => e.param === 'description') ? 'invalid' : '' %>"
+                    name="description" 
+                    id="description"
+                    rows="5"><% if (editing || hasError) { %><%= product.description %><% } %></textarea>
+                <% if (validationErrors.find(e => e.param === 'description')) { %>
+                    <span class="error-text"><%= validationErrors.find(e => e.param === 'description').msg %></span>
+                <% } %>
+            </div>
+
+            <div class="form-control">
+                <label for="banner">Thuộc nhóm/Banner</label>
+                <select name="banner" id="banner">
+                    <option value="gift" <%= product && product.banner === 'gift' ? 'selected' : '' %>>Quà tặng trái cây</option>
+                    <option value="vietnam" <%= product && product.banner === 'vietnam' ? 'selected' : '' %>>Trái cây Việt Nam</option>
+                    <option value="import" <%= product && product.banner === 'import' ? 'selected' : '' %>>Trái cây nhập khẩu</option>
+                </select>
+            </div>
+
+            <% if (editing) { %>
+                <input type="hidden" value="<%= product._id %>" name="productId">
+            <% } %>
+
+            <button class="btn btn-primary" type="submit">
+                <% if (editing) { %>Cập nhật sản phẩm<% } else { %>Thêm sản phẩm<% } %>
+            </button>
+        </form>
+    </main>
+
+<%- include('../includes/end.ejs') %> 

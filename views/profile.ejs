@@ -1,0 +1,144 @@
+<%- include('includes/head.ejs') %>
+<link rel="stylesheet" href="/css/forms.css">
+</head>
+<body>
+<%- include('includes/navigation.ejs') %>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white text-center py-4">
+                    <h2 class="fw-bold mb-0">Thông tin cá nhân</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 text-center">
+                        <i class="fas fa-user-circle fa-4x text-secondary mb-3"></i>
+                    </div>
+                    <ul class="list-group list-group-flush mb-4">
+                        <li class="list-group-item">
+                            <strong>Họ tên:</strong> <%= user.name %>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Email:</strong> <%= user.email %>
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Vai trò:</strong> <span class="badge bg-<%= user.role === 'admin' ? 'danger' : 'primary' %>"><%= user.role === 'admin' ? 'Quản trị viên' : 'Khách hàng' %></span>
+                        </li>
+                    </ul>
+                    <form action="/profile/update-info" method="POST" class="mb-3">
+                        <div class="mb-2">
+                            <label for="name" class="form-label">Đổi họ tên</label>
+                            <input type="text" class="form-control" id="name" name="name" value="<%= user.name %>" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Cập nhật họ tên</button>
+                    </form>
+                    <form action="/profile/update-email" method="POST" class="mb-3">
+                        <div class="mb-2">
+                            <label for="email" class="form-label">Đổi email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Cập nhật email</button>
+                    </form>
+                    <form action="/profile/update-password" method="POST" class="mb-3">
+                        <div class="mb-2">
+                            <label for="oldPassword" class="form-label">Mật khẩu cũ</label>
+                            <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="newPassword" class="form-label">Mật khẩu mới</label>
+                            <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="confirmPassword" class="form-label">Nhập lại mật khẩu mới</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100">Đổi mật khẩu</button>
+                    </form>
+                    <form action="/logout" method="POST" class="d-grid gap-2 mt-3">
+                        <button type="submit" class="btn btn-outline-danger">Đăng xuất</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Bảng đơn hàng của user -->
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white text-center py-3">
+                    <h4 class="fw-bold mb-0">Đơn hàng của bạn</h4>
+                </div>
+                <div class="card-body">
+                    <% if (typeof orders !== 'undefined' && orders && orders.length > 0) { %>
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mã đơn hàng</th>
+                                    <th>Ngày đặt</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Trạng thái</th>
+                                    <th>Hóa đơn</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% orders.forEach(function(order) { %>
+                                    <tr>
+                                        <td><%= order.id || order.orderId %></td>
+                                        <td><%= order.createdAt ? new Date(order.createdAt).toLocaleString('vi-VN') : '' %></td>
+                                        <td><%= order.totalPrice ? order.totalPrice.toLocaleString('vi-VN') : 0 %> VNĐ</td>
+                                        <td><%= order.status || 'Chờ xử lý' %></td>
+                                        <td>
+                                            <a href="/orders/<%= order.id %>" class="btn btn-sm btn-outline-info me-1">Xem chi tiết</a>
+                                            <a href="/orders/<%= order.id %>/invoice" class="btn btn-sm btn-outline-primary" target="_blank">Tải hóa đơn</a>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } else { %>
+                        <div class="text-center text-muted">Bạn chưa có đơn hàng nào.</div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<%- include('includes/end.ejs') %>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const oldPasswordInput = document.getElementById('oldPassword');
+  const changeBtn = document.querySelector('form[action="/profile/update-password"] button[type="submit"]');
+  if (!oldPasswordInput || !changeBtn) return;
+  let errorDiv = oldPasswordInput.parentNode.querySelector('.text-danger');
+  if (!errorDiv) {
+    errorDiv = document.createElement('div');
+    errorDiv.className = 'text-danger mt-1';
+    oldPasswordInput.parentNode.appendChild(errorDiv);
+  }
+
+  oldPasswordInput.addEventListener('input', async function() {
+    const val = this.value;
+    if (!val) {
+      errorDiv.textContent = '';
+      changeBtn.disabled = false;
+      return;
+    }
+    const res = await fetch('/profile/check-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ oldPassword: val })
+    });
+    const data = await res.json();
+    if (!data.valid) {
+      errorDiv.textContent = 'Mật khẩu cũ không đúng!';
+      changeBtn.disabled = true;
+    } else {
+      errorDiv.textContent = '';
+      changeBtn.disabled = false;
+    }
+  });
+});
+</script>
+</body> 

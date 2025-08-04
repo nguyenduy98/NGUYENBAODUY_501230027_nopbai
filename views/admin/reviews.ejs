@@ -1,0 +1,223 @@
+<%- include('../includes/head.ejs') %>
+<body>
+<%- include('../includes/navigation.ejs') %>
+<div class="container py-4">
+  <h2 class="mb-4">Quản lý đánh giá sản phẩm</h2>
+  <table class="table table-bordered table-hover">
+    <thead class="table-light">
+      <tr>
+        <th>Sản phẩm</th>
+        <th>Người đánh giá</th>
+        <th>Số sao</th>
+        <th>Nội dung</th>
+        <th>Phản hồi Admin</th>
+        <th>Ngày</th>
+        <th>Thao tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% reviews.forEach(r => { %>
+        <tr>
+          <td><%= r.productName %></td>
+          <td><%= r.userName %></td>
+          <td><%= r.rating %> ★</td>
+          <td><%= r.comment %></td>
+          <td>
+            <% if (r.adminReply) { %>
+              <div class="admin-reply">
+                <div class="reply-content mb-2">
+                  <strong>Admin:</strong> <%= r.adminReply.content %>
+                </div>
+                <small class="text-muted">
+                  <%= r.adminReply.createdAt ? new Date(r.adminReply.createdAt).toLocaleString('vi-VN') : '' %>
+                </small>
+                <div class="mt-2">
+                  <button class="btn btn-sm btn-warning edit-reply-btn" 
+                          data-review-id="<%= r._id %>" 
+                          data-reply-content="<%= r.adminReply.content %>">
+                    <i class="fas fa-edit"></i> Sửa
+                  </button>
+                  <button class="btn btn-sm btn-danger delete-reply-btn" 
+                          data-review-id="<%= r._id %>">
+                    <i class="fas fa-trash"></i> Xóa
+                  </button>
+                </div>
+              </div>
+            <% } else { %>
+              <button class="btn btn-sm btn-primary add-reply-btn" 
+                      data-review-id="<%= r._id %>">
+                <i class="fas fa-reply"></i> Phản hồi
+              </button>
+            <% } %>
+          </td>
+          <td><%= r.createdAt ? new Date(r.createdAt).toLocaleString('vi-VN') : '' %></td>
+          <td>
+            <form method="POST" action="/admin/reviews/delete/<%= r._id %>" onsubmit="return confirm('Bạn chắc chắn muốn xóa đánh giá này?');">
+              <button class="btn btn-danger btn-sm" type="submit"><i class="fas fa-trash"></i> Xóa</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal cho thêm/sửa reply -->
+<div class="modal fade" id="replyModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="replyModalTitle">Phản hồi đánh giá</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="replyForm">
+          <input type="hidden" id="reviewId" name="reviewId">
+          <div class="mb-3">
+            <label for="replyContent" class="form-label">Nội dung phản hồi:</label>
+            <textarea class="form-control" id="replyContent" name="replyContent" rows="4" required></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-primary" id="saveReplyBtn">Lưu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentAction = 'add'; // 'add' hoặc 'update'
+
+// Xử lý nút thêm reply
+document.querySelectorAll('.add-reply-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const reviewId = this.getAttribute('data-review-id');
+    currentAction = 'add';
+    document.getElementById('replyModalTitle').textContent = 'Thêm phản hồi';
+    document.getElementById('reviewId').value = reviewId;
+    document.getElementById('replyContent').value = '';
+    new bootstrap.Modal(document.getElementById('replyModal')).show();
+  });
+});
+
+// Xử lý nút sửa reply
+document.querySelectorAll('.edit-reply-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const reviewId = this.getAttribute('data-review-id');
+    const replyContent = this.getAttribute('data-reply-content');
+    currentAction = 'update';
+    document.getElementById('replyModalTitle').textContent = 'Sửa phản hồi';
+    document.getElementById('reviewId').value = reviewId;
+    document.getElementById('replyContent').value = replyContent;
+    new bootstrap.Modal(document.getElementById('replyModal')).show();
+  });
+});
+
+// Xử lý nút xóa reply
+document.querySelectorAll('.delete-reply-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    const reviewId = this.getAttribute('data-review-id');
+    if (confirm('Bạn chắc chắn muốn xóa phản hồi này?')) {
+      deleteReply(reviewId);
+    }
+  });
+});
+
+// Xử lý lưu reply
+document.getElementById('saveReplyBtn').addEventListener('click', function() {
+  const reviewId = document.getElementById('reviewId').value;
+  const replyContent = document.getElementById('replyContent').value.trim();
+  
+  if (!replyContent) {
+    alert('Vui lòng nhập nội dung phản hồi');
+    return;
+  }
+  
+  if (currentAction === 'add') {
+    addReply(reviewId, replyContent);
+  } else {
+    updateReply(reviewId, replyContent);
+  }
+});
+
+function addReply(reviewId, replyContent) {
+  fetch('/admin/reviews/reply/add', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      reviewId: reviewId,
+      replyContent: replyContent
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert(data.message);
+      location.reload();
+    } else {
+      alert('Lỗi: ' + data.message);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Có lỗi xảy ra');
+  });
+}
+
+function updateReply(reviewId, replyContent) {
+  fetch('/admin/reviews/reply/update', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      reviewId: reviewId,
+      replyContent: replyContent
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert(data.message);
+      location.reload();
+    } else {
+      alert('Lỗi: ' + data.message);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Có lỗi xảy ra');
+  });
+}
+
+function deleteReply(reviewId) {
+  fetch('/admin/reviews/reply/delete', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      reviewId: reviewId
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      alert(data.message);
+      location.reload();
+    } else {
+      alert('Lỗi: ' + data.message);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Có lỗi xảy ra');
+  });
+}
+</script>
+
+<%- include('../includes/end.ejs') %> 

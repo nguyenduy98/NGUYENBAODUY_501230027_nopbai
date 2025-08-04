@@ -1,0 +1,46 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="UTF-8")
+        meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        meta(http-equiv="X-UA-Compatible", content="ie=edge")
+        title #{pageTitle}
+        // Bootstrap CSS
+        link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css", rel="stylesheet")
+        // Google Fonts
+        link(href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap", rel="stylesheet")
+        // Font Awesome
+        link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css")
+        // Custom CSS
+        link(rel="stylesheet", href="/css/main.css")
+    body
+        nav.navbar.navbar-expand-lg.navbar-dark.bg-primary
+            .container
+                a.navbar-brand(href="/") Shop Online
+                button.navbar-toggler(type="button", data-bs-toggle="collapse", data-bs-target="#navbarNav")
+                    span.navbar-toggler-icon
+                #navbarNav.collapse.navbar-collapse
+                    ul.navbar-nav.me-auto
+                        li.nav-item
+                            a.nav-link(href="/", class=(path === '/' ? 'active' : ''))
+                                i.fas.fa-home
+                                |  Trang chủ
+                        li.nav-item
+                            a.nav-link(href="/cart", class=(path === '/cart' ? 'active' : ''))
+                                i.fas.fa-shopping-cart
+                                |  Giỏ hàng
+                    ul.navbar-nav
+                        li.nav-item
+                            a.nav-link(href="/admin/add-product", class=(path === '/admin/add-product' ? 'active' : ''))
+                                i.fas.fa-plus
+                                |  Thêm sản phẩm
+                        li.nav-item
+                            a.nav-link(href="/admin/products", class=(path === '/admin/products' ? 'active' : ''))
+                                i.fas.fa-list
+                                |  Quản lý sản phẩm
+
+        block content
+
+        // Bootstrap JS and Popper.js
+        script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js")
+        script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js") 

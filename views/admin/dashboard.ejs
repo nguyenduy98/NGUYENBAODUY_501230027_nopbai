@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= pageTitle %></title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { background: #f6f7fb; font-family: 'Segoe UI', Arial, sans-serif; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar {
+      width: 230px; background: #fff; box-shadow: 2px 0 16px #e0e0e0a8; display: flex; flex-direction: column; align-items: center; padding: 24px 0; position: fixed; left: 0; top: 0; bottom: 0; z-index: 10;
+    }
+    .sidebar .logo { font-size: 2rem; font-weight: 900; color: #a259ff; margin-bottom: 32px; letter-spacing: 2px; }
+    .sidebar .avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin-bottom: 12px; border: 3px solid #a259ff22; }
+    .sidebar .user-name { font-weight: 700; color: #333; margin-bottom: 24px; }
+    .sidebar nav { width: 100%; }
+    .sidebar nav ul { list-style: none; padding: 0; margin: 0; }
+    .sidebar nav ul li { margin: 10px 0; }
+    .sidebar nav ul li a { display: flex; align-items: center; gap: 12px; color: #888; font-weight: 500; text-decoration: none; padding: 10px 28px; border-radius: 12px 0 0 12px; transition: background 0.15s, color 0.15s; }
+    .sidebar nav ul li a.active, .sidebar nav ul li a:hover { background: #f3eaff; color: #a259ff; }
+    .sidebar .add-btn { margin: 24px 0 0 0; background: #a259ff; color: #fff; border: none; border-radius: 12px; padding: 10px 24px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+    .sidebar .add-btn:hover { background: #7c3aed; }
+    .main-content { margin-left: 230px; flex: 1; padding: 0 24px 24px 24px; }
+    .header { display: flex; align-items: center; justify-content: space-between; padding: 24px 0 12px 0; }
+    .search-box { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px #e0e0e033; padding: 8px 18px; display: flex; align-items: center; gap: 10px; }
+    .search-box input { border: none; outline: none; background: transparent; font-size: 1rem; width: 180px; }
+    .header-right { display: flex; align-items: center; gap: 18px; }
+    .header-right .icon { font-size: 1.3rem; color: #a259ff; background: #f3eaff; border-radius: 50%; padding: 8px; transition: background 0.15s; cursor: pointer; }
+    .header-right .icon:hover { background: #a259ff; color: #fff; }
+    .header-right .avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #a259ff33; }
+    .dashboard-title { font-size: 1.5rem; font-weight: 800; color: #a259ff; margin-bottom: 24px; }
+    .stat-row { display: flex; gap: 24px; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-card { flex: 1 1 220px; background: linear-gradient(135deg, #ffb88c 0%, #a259ff 100%); border-radius: 18px; box-shadow: 0 2px 16px rgba(162,89,255,0.10); padding: 28px 18px; text-align: left; color: #fff; margin-bottom: 12px; position: relative; overflow: hidden; transition: transform 0.15s; }
+    .stat-card.blue { background: linear-gradient(135deg, #6dd5ed 0%, #2193b0 100%); }
+    .stat-card.green { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    .stat-card.pink { background: linear-gradient(135deg, #f7971e 0%, #ffd200 100%); }
+    .stat-card:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 6px 24px rgba(162,89,255,0.18); }
+    .stat-icon { font-size: 2.6rem; margin-bottom: 10px; opacity: 0.85; }
+    .stat-title { font-size: 1.1rem; letter-spacing: 1px; margin-bottom: 6px; font-weight: 500; }
+    .stat-value { font-size: 2.2rem; font-weight: 800; letter-spacing: 1px; }
+    .stat-desc { font-size: 0.98rem; opacity: 0.85; margin-top: 2px; }
+    .row-2col { display: flex; gap: 24px; flex-wrap: wrap; }
+    .box { background: #fff; border-radius: 18px; box-shadow: 0 2px 12px #a259ff11; padding: 24px; flex: 1 1 350px; min-width: 320px; margin-bottom: 24px; }
+    .box-title { font-size: 1.1rem; font-weight: 700; color: #a259ff; margin-bottom: 18px; }
+    .chart-placeholder { width: 100%; height: 180px; background: linear-gradient(135deg, #f3eaff 0%, #fff 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #a259ff88; font-size: 1.3rem; font-weight: 600; }
+    @media (max-width: 900px) { .stat-row, .row-2col { flex-direction: column; gap: 12px; } .main-content { margin-left: 0; } .sidebar { position: static; width: 100%; flex-direction: row; height: auto; box-shadow: none; } }
+    @media (max-width: 600px) { .main-content { padding: 0 2px; } .dashboard-title { font-size: 1.1rem; } .stat-card { padding: 18px 8px; } }
+  </style>
+</head>
+<body>
+<script>console.log('user:', <%- JSON.stringify(user || {}) %>);</script>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a href="/" style="text-decoration:none;"><div class="logo">FruitMart</div></a>
+    <img src="/images/avatar-admin.png" class="avatar" alt="Admin">
+    <div class="user-name">Admin</div>
+    <% if (typeof user !== 'undefined' && user && user.role === 'admin') { %>
+      <form action="/logout" method="POST" style="width:100%;margin:16px 0;text-align:center;">
+        <button type="submit" class="add-btn" style="background:#ff4444;"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+      </form>
+    <% } %>
+    <nav>
+      <ul>
+        <li><a href="/admin/dashboard" class="active"><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+        <li><a href="/admin/products"><i class="fas fa-apple-alt"></i> Sản phẩm</a></li>
+        <li><a href="/admin/orders"><i class="fas fa-shopping-basket"></i> Đơn hàng</a></li>
+        <li><a href="/admin/users"><i class="fas fa-users"></i> Người dùng</a></li>
+        <li><a href="/admin/reviews"><i class="fas fa-star"></i> Đánh giá</a></li>
+        <li><a href="/admin/coupons"><i class="fas fa-ticket-alt"></i> Mã giảm giá</a></li>
+      </ul>
+    </nav>
+    <button class="add-btn"><i class="fas fa-plus"></i> Thêm mới</button>
+  </aside>
+  <!-- Main content -->
+  <div class="main-content">
+    <!-- Header -->
+    <div class="header">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Tìm kiếm...">
+      </div>
+      <div class="header-right" style="position:relative;">
+        <span class="icon"><i class="fas fa-bell"></i></span>
+        <span class="icon"><i class="fas fa-cog"></i></span>
+        <div class="dropdown" style="display:inline-block;position:relative;">
+          <img src="/images/avatar-admin.png" class="avatar" alt="Admin" id="adminAvatar" style="cursor:pointer;">
+          <div id="avatarDropdown" style="display:none;position:absolute;right:0;top:48px;min-width:160px;background:#fff;border-radius:12px;box-shadow:0 2px 12px #a259ff22;padding:8px 0;z-index:1001;">
+            <% if (typeof user !== 'undefined' && user && user.role === 'admin') { %>
+              <form action="/logout" method="POST" style="margin:0;">
+                <button type="submit" style="width:100%;background:none;border:none;color:#ff4444;padding:10px 18px;text-align:left;font-weight:600;font-size:1rem;cursor:pointer;">
+                  <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="dashboard-title">Dashboard</div>
+    <!-- Card thống kê -->
+    <div class="stat-row">
+      <div class="stat-card pink">
+        <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+        <div class="stat-title">Doanh thu tuần</div>
+        <div class="stat-value"><%= stats.weeklyRevenue ? stats.weeklyRevenue.toLocaleString('vi-VN') : 0 %>₫</div>
+        <div class="stat-desc">Tăng 10% so với tuần trước</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-icon"><i class="fas fa-shopping-basket"></i></div>
+        <div class="stat-title">Đơn hàng tuần</div>
+        <div class="stat-value"><%= stats.weeklyOrderCount || 0 %></div>
+        <div class="stat-desc">Giảm 5% so với tuần trước</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon"><i class="fas fa-users"></i></div>
+        <div class="stat-title">Tổng user</div>
+        <div class="stat-value"><%= stats.totalUsers %></div>
+        <div class="stat-desc">Tăng 8% so với tuần trước</div>
+      </div>
+    </div>
+    <!-- Thống kê trạng thái đơn hàng -->
+    <div class="box" style="max-width:600px;margin:0 auto 24px auto;">
+      <div class="box-title">Thống kê trạng thái đơn hàng</div>
+      <div id="order-status-stats" style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;"></div>
+    </div>
+    <!-- Biểu đồ & Thống kê phụ -->
+    <div class="row-2col">
+      <div class="box" style="width:100%; padding: 12px 12px; min-width: 220px; max-width: 500px; margin: 0 auto 24px auto;">
+        <div class="box-title" style="margin-bottom:10px;">Visit And Sales Statistics</div>
+        <canvas id="barChart" width="100%" height="110"></canvas>
+      </div>
+      <div class="box" style="width:100%; padding: 12px 12px; min-width: 220px; max-width: 400px; margin: 0 auto 24px auto;">
+        <div class="box-title" style="margin-bottom:10px;">Tỉ lệ loại sản phẩm bán chạy</div>
+        <canvas id="pieChart" width="100%" height="110"></canvas>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      // Biểu đồ cột doanh thu
+      fetch('/admin/dashboard/weekly-revenue')
+        .then(res => res.json())
+        .then(chartData => {
+      const ctx = document.getElementById('barChart').getContext('2d');
+          new Chart(ctx, {
+        type: 'bar',
+        data: {
+              labels: chartData.labels,
+          datasets: [{
+                label: 'Doanh số (VNĐ)',
+                data: chartData.data,
+            backgroundColor: 'rgba(162,89,255,0.7)',
+            borderRadius: 8,
+            maxBarThickness: 28
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            title: { display: false }
+          },
+          scales: {
+            x: { grid: { display: false } },
+            y: { beginAtZero: true, grid: { color: '#f3eaff' } }
+          }
+        }
+      });
+        });
+      // Biểu đồ tròn (pie chart)
+      fetch('/admin/dashboard/bestseller-pie')
+        .then(res => res.json())
+        .then(pieData => {
+          const pieCtx = document.getElementById('pieChart').getContext('2d');
+          new Chart(pieCtx, {
+            type: 'pie',
+            data: {
+              labels: pieData.labels,
+              datasets: [{
+                label: 'Tỉ lệ bán',
+                data: pieData.data,
+                backgroundColor: [
+                  'rgba(162,89,255,0.7)',
+                  'rgba(255,184,140,0.7)',
+                  'rgba(67,233,123,0.7)',
+                  'rgba(109,213,237,0.7)',
+                  'rgba(255,210,0,0.7)'
+                ],
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { position: 'bottom' },
+                title: { display: false }
+              }
+            }
+          });
+        });
+      // Thống kê trạng thái đơn hàng
+      fetch('/admin/dashboard/order-status-stats')
+        .then(res => res.json())
+        .then(stats => {
+          const container = document.getElementById('order-status-stats');
+          container.innerHTML = `
+            <div><b>Chờ xử lý:</b> <span style='color:#f7971e'>${stats.pending}</span></div>
+            <div><b>Đang giao:</b> <span style='color:#2193b0'>${stats.processing}</span></div>
+            <div><b>Hoàn thành:</b> <span style='color:#43e97b'>${stats.completed}</span></div>
+            <div><b>Đã hủy:</b> <span style='color:#ff4d4f'>${stats.cancelled}</span></div>
+          `;
+        });
+      // Dropdown avatar admin
+      const avatar = document.getElementById('adminAvatar');
+      const dropdown = document.getElementById('avatarDropdown');
+      if (avatar && dropdown) {
+        avatar.addEventListener('click', function(e) {
+          e.stopPropagation();
+          dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+        document.addEventListener('click', function() {
+          dropdown.style.display = 'none';
+        });
+      }
+    </script>
+  </div>
+</div>
+</body>
+</html> 

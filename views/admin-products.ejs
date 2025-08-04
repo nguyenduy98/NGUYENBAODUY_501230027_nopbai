@@ -1,0 +1,78 @@
+<%- include('./includes/head.ejs') %>
+<link rel="stylesheet" href="/css/product.css">
+</head>
+<body>
+<%- include('./includes/navigation.ejs') %>
+<main>
+  <div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="h3">Danh sách sản phẩm</h1>
+      <a href="/admin/add-product" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Thêm sản phẩm mới
+      </a>
+    </div>
+    <div class="mb-3 d-flex justify-content-end">
+      <input id="search-product" type="text" class="form-control w-25" placeholder="Tìm kiếm sản phẩm...">
+    </div>
+    <% if (prods.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle bg-white">
+          <thead class="table-light">
+            <tr>
+              <th scope="col">Hình ảnh</th>
+              <th scope="col">Tên sản phẩm</th>
+              <th scope="col">Thuộc nhóm</th>
+              <th scope="col">Thương hiệu</th>
+              <th scope="col">Giá</th>
+              <th scope="col">Số lượng</th>
+              <th scope="col">Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="product-table-body">
+            <% for (let product of prods) { %>
+              <tr data-title="<%= product.title.toLowerCase() %>">
+                <td>
+                  <img src="<%= product.imgUrl || '/images/default-product.jpg' %>" alt="Ảnh" style="width:48px;height:48px;object-fit:cover;border-radius:6px;">
+                </td>
+                <td><%= product.title %></td>
+                <td><%= product.groupName %></td>
+                <td><%= product.brand || '' %></td>
+                <td><%= product.price ? Number(product.price).toLocaleString('vi-VN') : 0 %> VNĐ</td>
+                <td><%= product.stock %></td>
+                <td>
+                  <a href="/admin/edit-product/<%= product._id %>?edit=true" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-edit"></i> Sửa
+                  </a>
+                  <form action="/admin/delete-product" method="POST" class="d-inline">
+                    <input type="hidden" value="<%= product._id %>" name="productId">
+                    <button class="btn btn-outline-danger btn-sm" type="submit" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">
+                      <i class="fas fa-trash"></i> Xóa
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <div class="text-center py-5">
+        <h2>Chưa có sản phẩm nào!</h2>
+        <p class="text-muted">Hãy thêm sản phẩm mới để bắt đầu.</p>
+      </div>
+    <% } %>
+  </div>
+</main>
+<%- include('./includes/end.ejs') %>
+<script>
+  // Tìm kiếm sản phẩm theo tên
+  const searchInput = document.getElementById('search-product');
+  const tableBody = document.getElementById('product-table-body');
+  searchInput.addEventListener('input', function() {
+    const keyword = this.value.toLowerCase();
+    Array.from(tableBody.querySelectorAll('tr')).forEach(row => {
+      const title = row.getAttribute('data-title');
+      row.style.display = title.includes(keyword) ? '' : 'none';
+    });
+  });
+</script>

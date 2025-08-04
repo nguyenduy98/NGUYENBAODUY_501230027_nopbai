@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký</title>
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { background: #fff !important; }
+    .register-container {
+      max-width: 400px;
+      margin: 60px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 4px 32px rgba(255,133,81,0.13);
+      padding: 32px 28px 24px 28px;
+      text-align: center;
+    }
+    .register-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #ff8551;
+      margin-bottom: 24px;
+    }
+    .form-control {
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-size: 1rem;
+      padding: 10px 14px;
+    }
+    .btn-register {
+      background: #ff8551;
+      color: #fff;
+      border-radius: 24px;
+      padding: 10px 32px;
+      font-weight: 700;
+      border: none;
+      font-size: 1.1rem;
+      transition: background 0.2s;
+    }
+    .btn-register:hover {
+      background: #ff6a1a;
+    }
+    .register-icon {
+      font-size: 2.2rem;
+      color: #ff8551;
+      margin-bottom: 12px;
+    }
+    .register-error {
+      color: #e74a3b;
+      margin-bottom: 12px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="register-container">
+    <div class="register-icon"><i class="fas fa-user-plus"></i></div>
+    <div class="register-title">Đăng ký tài khoản</div>
+    <% if (errorMessage) { %>
+      <div class="register-error"><%= errorMessage %></div>
+    <% } %>
+    <form action="/register" method="POST">
+      <input type="text" name="name" class="form-control" placeholder="Họ và tên" required>
+      <input type="text" name="email" class="form-control" placeholder="Tên đăng nhập hoặc email" required>
+      <input type="password" name="password" class="form-control" placeholder="Mật khẩu" required>
+      <input type="password" name="confirmPassword" class="form-control" placeholder="Xác nhận mật khẩu" required>
+      <button type="submit" class="btn-register w-100">Đăng ký</button>
+    </form>
+    <div style="margin-top:16px; font-size:0.98rem;">
+      Đã có tài khoản? <a href="/login" style="color:#ff8551; font-weight:600;">Đăng nhập</a>
+    </div>
+  </div>
+</body>
+</html> 
